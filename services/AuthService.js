@@ -28,10 +28,17 @@ const login = async (userName,password)=>{
     }
     throw Error("Invalid user or password");
     
-    
 };
+
+const getUser = async (user) => {
+    const filter = {
+        _id: user.userId
+    }
+    return  await User.findOne(filter);
+}
 
 module.exports = {
     register,
-    login
+    login,
+    getUser
 }

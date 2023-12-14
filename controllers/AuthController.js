@@ -27,12 +27,26 @@ const login = async function(req,res,next)
         res.status(200).send({ token });
     }
     catch (err) {
-        console.log(err)
+       
         res.status(401).send({message:"Invalid user"});
+    }
+}
+
+const getUser = async function(req,res,next)
+{
+    try
+    {
+        let user = await authSerivce.getUser( req.user);
+        res.status(200).send({ "user":user });
+    }
+    catch (err) {
+       
+        res.status(404).send({message:"User Info not found"});
     }
 }
 
 module.exports = {
     register,
-    login
+    login,
+    getUser
 }

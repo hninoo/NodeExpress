@@ -1,36 +1,28 @@
 const Jwt = require('../libs/jwt');
+const jwtConfig = require('../config/jwt');
+let SECRET_KEY = jwtConfig.SECRET_KEY;
 
-exports.checkToken = (req, res, next) => {
-	let jwt = new Jwt();
-	let token = req.headers['x-access-token'] || req.headers['authorization'] || ''; // Express headers are auto converted to lowercase
+const checkToken = (req, res, next) => {
+	
+	let token = req.headers.authorization;
+	if (!token) return res.status(401).send("Access Denied / Unauthorized request");
+	try {
+        token = token.split(' ')[1] // Remove Bearer from string
 
-	if (token) {
-		if (token.startsWith('Bearer ')) {
-			token = token.slice(7, token.length);
-		}
-		jwt.verifyToken(token)
-			.then(decoded => {
-				req.token = decoded;
-				next();
-			})
-			.catch(err => {
-				return res.status(401).json({
-					status: 401,
-					message: null,
-					data: null,
-					error: err
-				})
-			});
+        if (token === 'null' || !token) return res.status(401).send('Unauthorized request');
+		let verifiedUser = Jwt.verifyToken(token, SECRET_KEY);  
+		
+        if (!verifiedUser) return res.status(401).send('Unauthorized request')
 
-	} else {
-		return res.json({
-			status: 401,
-			message: null,
-			data: null,
-			error: {
-				errCode: 40101,
-				message: "Token Not Found"
-			}
-		});
-	}
-};
+        req.user = verifiedUser; 
+        next();
+
+	}catch (error) {
+        // console.log(error);
+        res.status(401).send("Invalid Token");
+    }
+}
+
+module.exports = {
+    checkToken
+}
