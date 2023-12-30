@@ -1,9 +1,9 @@
 # NodeExpress
 ### Project setup
-``sh``
+```sh
 npm i (or) npm install
-``
+```
 ### Run in localhost 
-``sh``
+```sh
 npm run dev
-``
+```
